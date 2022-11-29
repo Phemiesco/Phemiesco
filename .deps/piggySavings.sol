@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.1;
 
-// import "hardhat/console.sol";
 
 contract Savings {
     uint256 public Maturitydate;  
@@ -21,8 +20,7 @@ contract Savings {
     }
 
     function withdraw() public {
-        // console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);
-
+       
         require(block.timestamp >= Maturitydate, "it's not maturity date yet");
         require(msg.sender == owner, "You cannot withdraw with from this account");
 
