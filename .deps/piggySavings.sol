@@ -1,30 +1,33 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.5.1;
+p// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.1;
 
-contract piggySavings {
+// import "hardhat/console.sol";
 
-    // who can withdraw
-    // who much can they withdraw
-    // when can they withdraw
-    address payable public beneficiary;
-    uint256 public releaseTime;
+contract Savings {
+    uint256 public Maturitydate;  
+    address payable private owner;
 
-    constructor(address payable _beneficiary, uint256 _releaseTime) public payable{
-        require(_releaseTime > block.timestamp);
-        beneficiary = _beneficiary;
-        releaseTime = _releaseTime;
+    event Withdrawal(uint256 amount, uint256 Date);
+
+    constructor(uint256 _Maturitydate) payable {
+        require(
+            block.timestamp < _Maturitydate,
+            "Maturitydate should be in the future"
+        );
+
+        Maturitydate = _Maturitydate;
+        owner = payable(msg.sender);
     }
 
-    function release() public payable{
-        require(block.timestamp >= releaseTime);
-        address(beneficiary).transfer(address(this).balance);
-    }
-}
-contract piggySavingsFactory {
-    piggySavings [] public Piggys;
+    function withdraw() public {
+        // console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);
 
-    function create(address _beneficiary, uint256 _releaseTime) public {
-        piggySavings piggys = new piggySavings(_beneficiary, _releaseTime);
-            Piggys.push(piggys);
-    } 
+        require(block.timestamp >= Maturitydate, "it's not maturity date yet");
+        require(msg.sender == owner, "You cannot withdraw with from this account");
+
+        emit Withdrawal(address(this).balance, block.timestamp);
+
+        owner.transfer(address(this).balance);
+    }
 }
